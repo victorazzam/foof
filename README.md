@@ -9,9 +9,11 @@ Compatibility: Linux and macOS
 ### Usage
 
 Grant execution permissions first:
+
 `$ chmod 777 foof`
 
 Then run foof like this:
+
 `$ ./foof`
 
 The help screen:
