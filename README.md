@@ -35,10 +35,10 @@ Options:    -n    search file names
             -c    search file contents
             -a    combine options -n and -c
 
-Example 1: ./foof -n foo bar xyz
+Example 1: ./foof.py -n foo bar xyz
 Find files containing 'foo' or 'bar' or 'xyz' in their name.
 
-Example 2: ./foof -a flag
+Example 2: ./foof.py -a flag
 Find files containing 'flag' in their name or contents.
 ```
 
