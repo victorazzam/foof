@@ -20,11 +20,11 @@ Compatibility: Linux and macOS
 
 Grant execution permissions first:
 
-`$ chmod 777 foof`
+`$ chmod 777 foof.py`
 
 Then run foof like this:
 
-`$ ./foof`
+`$ ./foof.py`
 
 ### Help
 
