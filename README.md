@@ -1,6 +1,4 @@
-## Flags of our Fathers
-
-***
+# Flags of our Fathers
 
 ### Description
 
