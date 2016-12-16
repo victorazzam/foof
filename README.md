@@ -31,3 +31,6 @@ Find files containing 'foo' or 'bar' or 'xyz' in their name.
 Example 2: ./foof -a flag
 Find files containing 'flag' in their name or contents.
 ```
+
+### License
+MIT
