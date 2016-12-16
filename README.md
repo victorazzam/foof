@@ -2,7 +2,9 @@
 
 ### Description
 
-A python script that uses the help of `mdfind` and prints whatever files
+A python script that uses the help of `mdfind` to search and display any file's location and contents based on a given string.
+
+Compatibility: Linux and macOS
 
 ### Usage
 
