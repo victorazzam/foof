@@ -16,7 +16,8 @@ Then run foof like this:
 
 `$ ./foof`
 
-The help screen:
+### Help
+
 ```
 Usage: ./foof <option> <string1> [<string2> <string3> ...]
 
