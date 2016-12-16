@@ -29,7 +29,7 @@ Then run foof like this:
 ### Help
 
 ```
-Usage: ./foof <option> <string1> [<string2> <string3> ...]
+Usage: ./foof.py <option> <string1> [<string2> <string3> ...]
 
 Options:    -n    search file names
             -c    search file contents
