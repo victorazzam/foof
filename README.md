@@ -42,5 +42,11 @@ Example 2: ./foof.py -a flag
 Find files containing 'flag' in their name or contents.
 ```
 
+### Version history
+
+* 1.1 - added search by contents, added logo
+* 1.0 - initial
+
 ### License
+
 MIT
