@@ -85,7 +85,7 @@ def stdout(F):
         b = f.read().strip().split("\n")
         size, permissions = meta(F)
         print """\n%sContents of %s%s\n%s\n%sSize:     %s bytes\nAccess:   %s%s
-%s""" % (R, F, Z, "=" * width, R, size, permissions, Z, "=" * width)
+%s""" % (Y, F, Z, "=" * width, R, size, permissions, Z, "=" * width)
         print Y + "\n".join([x.strip() for x in b if len(x.strip()) > 0]) + Z
         print
         f.close()
