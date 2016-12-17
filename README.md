@@ -12,7 +12,7 @@
 
 ### Description
 
-A python script that uses the help of `mdfind` to search and display any file's location and contents based on a given string.
+A python script that uses the help of `mdfind` to search and display any file's metadata and contents based on a given string.
 
 Compatibility: Linux and macOS
 
@@ -44,8 +44,9 @@ Find files containing 'flag' in their name or contents.
 
 ### Version history
 
-* 1.1 - added search by contents, added logo
-* 1.0 - initial
+* 1.2 - Dec 17 2016 - added file size and permissions
+* 1.1 - Dec 15 2016 - added search by contents, added help page
+* 1.0 - Dec 01 2016 - added search by name
 
 ### License
 
