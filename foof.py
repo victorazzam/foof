@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Locate any file and display its location and contents.
+# Locate any file and display its metadata and contents.
 # Apparently useful in CTFs ;)
 # Might need root in case of restrictions.
 #
@@ -16,7 +16,7 @@ R = "\033[91m"
 G = "\033[32m"
 Y = "\033[93m"
 C = "\033[96m"
-colors = (C,R,G,Y,R,Y,R,Y,R,Y,R,Y,R,C,R,C,Z)
+colors = (C,R,G,Y,R,Y,R,Y,R,Y,G,Y,R,Y,R,C,R,C,Z)
 
 help = """
     %sFlags of our Fathers
@@ -24,14 +24,14 @@ help = """
   %s\/\/\./\/\    %s/_-_-_-_-/
    %s\________\  %s/________/
              %s\%s/
-             /%s\\
+     %sv1.2%s    /%s\\
             %s/  %s\\
 
     %sAuthor: Victor Azzam
     %s--------------------
         %sLicense: MIT%s
 
-Locate any file and display its location and contents.
+Locate any file and display its metadata and contents.
 Usage: %s <option> <string1> [<string2> <string3> ...]
 
 Options:    -n    search file names
@@ -62,11 +62,31 @@ def MDfind(arg, o=""):
             if os.path.isfile(x):
                 found.append(x)
 
+def meta(F):
+    size = os.path.getsize(F)
+    P = os.popen("ls -l " + F).read()[1:10]
+    perm = P[-3:]
+    if os.geteuid() == os.stat(F).st_uid:
+        perm = P[:3]
+    rwx = []
+    if "r" in perm:
+        rwx.append("read")
+    if "w" in perm:
+        rwx.append("write")
+    if "x" in perm:
+        rwx.append("execute")
+    perm = "none"
+    if len(rwx) > 0:
+        perm = ", ".join(rwx)
+    return size, perm
+
 def stdout(F):
     with open(F) as f:
         b = f.read().strip().split("\n")
-        print "\nContents of %s:\n%s" % (F, "=" * width)
-        print "\n".join([x.strip() for x in b if len(x.strip()) > 0])
+        size, permissions = meta(F)
+        print """\n%sContents of %s%s\n%s\n%sSize:     %s bytes\nAccess:   %s%s
+%s""" % (R, F, Z, "=" * width, R, size, permissions, Z, "=" * width)
+        print Y + "\n".join([x.strip() for x in b if len(x.strip()) > 0]) + Z
         print
         f.close()
 
