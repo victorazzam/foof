@@ -46,8 +46,9 @@ OPTIONS
 -c    search file names and contents
 -d    search directory names
 -a    combine options -n, -c and -d
+-e    show examples for each option
 
-Note: you can append 'l' to the end of any option
+Note: append 'l' to the end of any option apart from -e
       (-nl, -cl, etc...) to only display the locations
       without the metadata and contents.
 """ % argv[0]
@@ -60,7 +61,14 @@ Find files containing 'foo' or 'bar' or 'xyz' in their name.
 
 %s -c flag
 Find files containing 'flag' in their name or contents.
-""" % tuple([argv[0] for x in range(2)])
+
+%s -d list
+Find directories containing 'list' in their name.
+
+%s -a daemon
+Find directories containing 'daemon' in their name, and files
+containing 'daemon' in their name or contents.
+""" % tuple([argv[0] for x in range(4)])
 
 found = []
 width = int(os.popen("stty size").read().split()[1])
@@ -117,10 +125,9 @@ def stdout(F):
 %s""" % (G, F, Z, "=" * width, R, size, permissions, Z, "=" * width)
         if size > 250:
             print "File too large, printing first 250 characters.\n" + "-" * 46
-            print Y + "\n".join(b)[:250]
+            print Y + "\n".join(b)[:250] + Z
         else:
-            print Y + "\n".join(b)
-        print Z
+            print Y + "\n".join(b) + Z
         time.sleep(0.1)
         f.close()
 
