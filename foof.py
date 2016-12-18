@@ -1,14 +1,15 @@
 #!/usr/bin/python
 #
 # Locate any file and display its metadata and contents.
-# Apparently useful in CTFs ;)
 # Might need root in case of restrictions.
+# Apparently useful in CTFs ;)
 #
 # Flags of our Fathers ya bish
 # Author: Victor Azzam
 # License: MIT
 
 import os
+import time
 from sys import argv, platform
 
 Z = "\033[0m"
@@ -18,13 +19,13 @@ Y = "\033[93m"
 C = "\033[96m"
 colors = (C,R,G,Y,R,Y,R,Y,R,Y,G,Y,R,Y,R,C,R,C,Z)
 
-help = """
+logo = """
     %sFlags of our Fathers
  %s.________%so      o%s________.
   %s\/\/\./\/\    %s/_-_-_-_-/
    %s\________\  %s/________/
              %s\%s/
-     %sv1.3%s    /%s\\
+     %sv1.4%s    /%s\\
             %s/  %s\\
 
     %sAuthor: Victor Azzam
@@ -32,35 +33,62 @@ help = """
         %sLicense: MIT%s
 
 Locate any file and display its metadata and contents.
-Usage: %s <option> <string1> [<string2> <string3> ...]
+""" % colors
 
-Options:    -n    search file names
-            -c    search file contents
-            -a    combine options -n and -c
+help = logo + """
+USAGE
+-----
+%s <option> <string> [<string> ...]
 
-Example 1: %s -n foo bar xyz
+OPTIONS
+-------
+-n    search file names
+-c    search file names and contents
+-d    search directory names
+-a    combine options -n, -c and -d
+
+Note: you can append 'l' to the end of any option
+      (-nl, -cl, etc...) to only display the locations
+      without the metadata and contents.
+""" % argv[0]
+
+examples = logo + """
+EXAMPLES
+--------
+%s -n foo bar xyz
 Find files containing 'foo' or 'bar' or 'xyz' in their name.
 
-Example 2: %s -a flag
+%s -c flag
 Find files containing 'flag' in their name or contents.
-""" % (colors + tuple([argv[0] for i in range(3)]))
+""" % tuple([argv[0] for x in range(2)])
 
 found = []
 width = int(os.popen("stty size").read().split()[1])
 
 def args():
-    tmp = argv[1].lower()
-    if tmp in ["-n", "-c", "-a"]:
-        return tmp
-    print help
+    tmp = argv[1]
+    if tmp in ["-e", "-n", "-c", "-d", "-a", "-nl", "-cl", "-dl", "-al"]:
+        if argv[1] == "-e":
+            print examples
+        else:
+            return tmp
+    else:
+        print help
     exit(1)
 
-def MDfind(arg, o=""):
+def MDfind(choice, arg, o=""):
     for i in arg:
         a = os.popen("mdfind%s %s" % (o, i)).read().strip().split("\n")
         for x in a:
-            if os.path.isfile(x):
-                found.append(x)
+            if choice in ["-d", "-dl"]:
+                if not os.path.isdir(x):
+                    continue
+            elif choice in ["-n", "-c", "-nl", "-cl"]:
+                if not os.path.isfile(x):
+                    continue
+            elif choice in ["-a", "-al"]:
+                pass
+            found.append(x)
 
 def meta(F):
     size = os.path.getsize(F)
@@ -87,28 +115,33 @@ def stdout(F):
         size, permissions = meta(F)
         print """\n%sContents of %s%s\n%s\n%sSize:     %s bytes\nAccess:   %s%s
 %s""" % (G, F, Z, "=" * width, R, size, permissions, Z, "=" * width)
-        if len(b) > 50:
-            print "File too large, printing first 50 lines.\n" + "-" * 40
-        print Y + "\n".join(b[:49])
+        if size > 250:
+            print "File too large, printing first 250 characters.\n" + "-" * 46
+            print Y + "\n".join(b)[:250]
+        else:
+            print Y + "\n".join(b)
         print Z
+        time.sleep(0.1)
         f.close()
 
 def main():
     choice = args()
     arg = argv[2:]
-    if choice in ["-n", "-a"]:
-        MDfind(arg, " -name")
-    if choice in ["-c", "-a"]:
-        MDfind(arg)
+    if choice in ["-n", "-d", "-nl", "-dl"]:
+        MDfind(choice, arg, " -name")
+    elif choice in ["-c", "-a", "-cl", "-al"]:
+        MDfind(choice, arg)
     if not len(found):
         print "No files found."
         exit()
     final = list(set(found))
-    for i in final:
-        try:
-            stdout(i)
-        except IOError:
-            print "\nCould not read from '%s'\n" % i
+    if not choice.endswith("l"):
+        for i in final:
+            try:
+                stdout(i)
+            except IOError:
+                if not os.path.isdir(i):
+                    print "\nCould not read from '%s'\n" % i
     print """
 Total files found: %d
 %s
@@ -117,7 +150,7 @@ Total files found: %d
 
 if __name__ == "__main__":
     try:
-        if len(argv) > 2:
+        if len(argv) > 1:
             exit(main())
         print help
     except KeyboardInterrupt:
