@@ -13,7 +13,7 @@ from sys import argv, platform
 
 Z = "\033[0m"
 R = "\033[91m"
-G = "\033[32m"
+G = "\033[92m"
 Y = "\033[93m"
 C = "\033[96m"
 colors = (C,R,G,Y,R,Y,R,Y,R,Y,G,Y,R,Y,R,C,R,C,Z)
@@ -64,7 +64,7 @@ def MDfind(arg, o=""):
 
 def meta(F):
     size = os.path.getsize(F)
-    P = os.popen("ls -l " + F).read()[1:10]
+    P = os.popen("ls -l " + F.replace(" ", "\ ")).read()[1:10]
     perm = P[-3:]
     if os.geteuid() == os.stat(F).st_uid:
         perm = P[:3]
@@ -83,11 +83,14 @@ def meta(F):
 def stdout(F):
     with open(F) as f:
         b = f.read().strip().split("\n")
+        b = [x.strip() for x in b if len(x.strip()) > 0]
         size, permissions = meta(F)
         print """\n%sContents of %s%s\n%s\n%sSize:     %s bytes\nAccess:   %s%s
-%s""" % (Y, F, Z, "=" * width, R, size, permissions, Z, "=" * width)
-        print Y + "\n".join([x.strip() for x in b if len(x.strip()) > 0]) + Z
-        print
+%s""" % (G, F, Z, "=" * width, R, size, permissions, Z, "=" * width)
+        if len(b) > 50:
+            print "File too large, printing first 50 lines.\n" + "-" * 40
+        print Y + "\n".join(b[:49])
+        print Z
         f.close()
 
 def main():
@@ -109,8 +112,8 @@ def main():
     print """
 Total files found: %d
 %s
-%s
-""" % (len(final), "-" * width, "\n".join(final))
+%s%s%s
+""" % (len(final), "-" * width, G, "\n".join(final), Z)
 
 if __name__ == "__main__":
     try:
