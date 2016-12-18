@@ -43,10 +43,11 @@ Find files containing 'flag' in their name or contents.
 
 ### Latest update
 
-Fixed an issue where some files were ignored due to incorrect string handling.
+Dealt with output to give the OS some time to print the contents. Also, changed output trimming from 50 lines to 250 characters.
 
 ### Version history
 
+* 1.4 - Dec 19 2016 - more search options, more output options, bug fixes
 * 1.3 - Dec 18 2016 - truncate output of large files, fixed filename issue
 * 1.2 - Dec 17 2016 - file size and permissions
 * 1.1 - Dec 15 2016 - search by contents, help page
