@@ -28,17 +28,20 @@ Then run foof like this:
 ### Help
 
 ```
-Usage: ./foof.py <option> <string1> [<string2> <string3> ...]
+USAGE
+-----
+foof.py <option> <string> [<string> ...]
 
-Options:    -n    search file names
-            -c    search file contents
-            -a    combine options -n and -c
+OPTIONS
+-------
+-n    search file names
+-c    search file names and contents
+-d    search directory names
+-a    combine options -n, -c and -d
 
-Example 1: ./foof.py -n foo bar xyz
-Find files containing 'foo' or 'bar' or 'xyz' in their name.
-
-Example 2: ./foof.py -a flag
-Find files containing 'flag' in their name or contents.
+Note: you can append 'l' to the end of any option
+      (-nl, -cl, etc...) to only display the locations
+      without the metadata and contents.
 ```
 
 ### Latest update
