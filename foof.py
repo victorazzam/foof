@@ -57,7 +57,7 @@ def args():
 
 def MDfind(arg, o=""):
     for i in arg:
-        a = os.popen("mdfind%s %s" % (o, i)).read().strip().split()
+        a = os.popen("mdfind%s %s" % (o, i)).read().strip().split("\n")
         for x in a:
             if os.path.isfile(x):
                 found.append(x)
