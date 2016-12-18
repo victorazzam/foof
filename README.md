@@ -30,7 +30,7 @@ Then run foof like this:
 ```
 USAGE
 -----
-foof.py <option> <string> [<string> ...]
+%s <option> <string> [<string> ...]
 
 OPTIONS
 -------
@@ -38,8 +38,9 @@ OPTIONS
 -c    search file names and contents
 -d    search directory names
 -a    combine options -n, -c and -d
+-e    show examples for each option
 
-Note: you can append 'l' to the end of any option
+Note: append 'l' to the end of any option apart from -e
       (-nl, -cl, etc...) to only display the locations
       without the metadata and contents.
 ```
