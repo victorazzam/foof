@@ -48,9 +48,10 @@ Fixed an issue where some files were ignored due to incorrect string handling.
 
 ### Version history
 
-* 1.2 - Dec 17 2016 - added file size and permissions
-* 1.1 - Dec 15 2016 - added search by contents, added help page
-* 1.0 - Dec 01 2016 - added search by name
+* 1.3 - Dec 18 2016 - only print 50 lines per file, fix for files with spaces
+* 1.2 - Dec 17 2016 - file size and permissions
+* 1.1 - Dec 15 2016 - search by contents, help page
+* 1.0 - Dec 01 2016 - search by name
 
 ### License
 
