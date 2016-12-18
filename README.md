@@ -42,6 +42,10 @@ Example 2: ./foof.py -a flag
 Find files containing 'flag' in their name or contents.
 ```
 
+### Latest update
+
+Fixed an issue where some files were ignored due to incorrect string handling.
+
 ### Version history
 
 * 1.2 - Dec 17 2016 - added file size and permissions
