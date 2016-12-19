@@ -30,7 +30,7 @@ Then run foof like this:
 ```
 USAGE
 -----
-%s <option> <string> [<string> ...]
+./foof.py <option> <string> [<string> ...]
 
 OPTIONS
 -------
