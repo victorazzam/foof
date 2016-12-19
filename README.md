@@ -63,7 +63,7 @@ I somehow managed to create an indexing method for GNU/Linux systems without the
 * /usr/bin
 * /usr/local/bin
 
-No significant timeouts so I think it's a good start. The algorithm has been verified to Debian and its derivatives, and likely other distibutions as well. Now it's all down to how much CPU potency and time you've got on your hands.
+No significant timeouts so I think it's a good start. The algorithm has been verified to work on Debian and its derivatives, and likely other distibutions as well. Now it's all down to how much CPU potency and time you've got on your hands.
 
 Release date for version 1.5 is Dec 21 2016 so don't run away just yet! Hehe
 
