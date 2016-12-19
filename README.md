@@ -13,7 +13,9 @@
 
 A python script that uses the help of `mdfind` to search and display any file's metadata and contents based on a given string.
 
-Compatibility: BSD, macOS
+Compatibility: macOS, BSD (honestly no clue)
+
+Note: A version compatible with GNU/Linux will be worked on and released in this repo and named foof-gnu.py (for unknown reasons). Sad to see Linux without a centrally managed database of files (such as Spotlight on macOS), gonna have to find a way to replicate `mdfind`'s functionality. UGH!
 
 ### ¡Something Important!
 ```diff
