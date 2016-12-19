@@ -58,7 +58,17 @@ Note: append 'l' to the end of any option apart from -e
 
 ### Latest update
 
-Dealt with output to give the OS some time to print the contents. Also, changed output trimming from 50 lines to 250 characters.
+I somehow managed to create an indexing method for GNU/Linux systems without the need for another release. In the interest of time and computing resources, it currently only indexes:
+
+* $USER's home dir, if it's not [/root] or [in /home]
+* /root
+* /home
+* /usr/bin
+* /usr/local/bin
+
+No significant timeouts so I think it's a good start. The algorithm has been verified and it works on Debian and its derivatives. Now it's all down to how much CPU potency and time you've got on your hands.
+
+Release date for version 1.5 is Dec 21 2016 so don't run away just yet! Hehe
 
 ### Version history
 
