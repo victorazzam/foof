@@ -17,14 +17,11 @@ Compatibility: BSD, macOS
 
 ### ¡Something Important!
 ```diff
-- So apparently... I just realised this doesn't work
-- on _actual_ GNU/Linux, rather only on BSD-derived
-- and Darwin systems. Sorry to all who have been mind
-- boggled by the 'mdfind: not found' message (if you've
-- got to that stage). Either way it still has its place
-- as the OSes it supports will (slowly, but steadily)
-- become a greater part of the hacking scene. Further
-- apologies for the confusion.
+- So apparently... I just realised this doesn't work on _actual_ GNU/Linux, rather only
+- on BSD-derived and Darwin systems. Sorry to all who have been mind boggled by the
+- 'mdfind: not found' message (if you've got to that stage). Either way it still has its
+- place as the OSes it supports will (slowly, but steadily) become a greater part of the
+- hacking scene. Further apologies for the confusion.
 ```
 
 ### Usage
