@@ -16,7 +16,7 @@ A python script that uses the help of `mdfind` to search and display any file's 
 Compatibility: macOS, BSD (honestly no clue)
 
 ```diff
-- Note: A version compatible with GNU/Linux is currently being worked on (refer to status below).
++ Note: A version compatible with GNU/Linux is currently being worked on (refer to status below).
 ```
 
 ### Usage
