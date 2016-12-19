@@ -23,7 +23,7 @@ Compatibility: macOS, BSD (honestly no clue)
 
 Download and grant execution permissions:
 
-```sh
+```txt
 $ git clone https://github.com/victorazzam/foof.git
 $ cd foof-master
 $ chmod a+x foof.py
