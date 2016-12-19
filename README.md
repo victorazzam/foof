@@ -19,13 +19,17 @@ Compatibility: macOS, BSD (honestly no clue)
 + Note: A version compatible with GNU/Linux is currently being worked on (refer to status below).
 ```
 
-### Usage
+### Setup
 
-Grant execution permissions first:
+Download and grant execution permissions:
 
-`$ chmod 777 foof.py`
+```sh
+$ git clone https://github.com/victorazzam/foof.git
+$ cd foof-master
+$ chmod a+x foof.py
+```
 
-Then run foof like this:
+Finally run foof like this:
 
 `$ ./foof.py`
 
