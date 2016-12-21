@@ -67,6 +67,8 @@ No significant timeouts so I think it's a good start. The algorithm has been ver
 
 Release date for version 1.5 is Dec 21 2016 so don't run away just yet! Hehe
 
+**EDIT:** ***rescheduled to Dec 23 2016***
+
 ### Version history
 
 * 1.4 - Dec 19 2016 - more search options, more output options, bug fixes
