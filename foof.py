@@ -25,7 +25,7 @@ logo = """
   %s\/\/\./\/\    %s/_-_-_-_-/
    %s\________\  %s/________/
              %s\%s/
-     %sv1.4%s    /%s\\
+     %sv1.5%s    /%s\\
             %s/  %s\\
 
     %sAuthor: Victor Azzam
@@ -77,78 +77,134 @@ def args():
     tmp = argv[1]
     if tmp in ["-e", "-n", "-c", "-d", "-a", "-nl", "-cl", "-dl", "-al"]:
         if argv[1] == "-e":
-            print examples
+            exit(examples)
         else:
+            if platform != 'darwin' and tmp in ['-c', '-cl']:
+                exit("Unfortunately your system does not support searching by content, sorry about that :(")
             return tmp
     else:
-        print help
-    exit(1)
+        exit(help)
+
+# Limited indexing system that replaces mdfind for those who don't have it.
+def index(paths_):
+    files = []
+    dirs = paths_
+    for path in dirs:
+        try:
+            for i in os.listdir(path):
+                i = path.rstrip('/') + '/' + i.strip('/')
+                if os.path.isfile(i):
+                    files.append(i)
+                elif os.path.isdir(i):
+                    dirs.append(i)
+        except (IOError, OSError):
+            pass
+    return sorted(files), sorted(dirs)
+
+def index_sort(index_src, o):
+    if index_src[0].startswith(('/home/', '/root/')):
+        del index_src[0]
+    index_n, index_d = index(index_src)
+    if o == 'f':
+        return index_n
+    if o == 'd':
+        return index_d
+    return index_n + index_d
 
 def MDfind(choice, arg, o=""):
+    if platform != 'darwin':
+        paths = [os.path.expanduser('~'), '/home', '/root', '/usr/bin', '/usr/local/bin', '/etc']
+        indexed = index_sort(paths, o)
     for i in arg:
-        a = os.popen("mdfind%s %s" % (o, i)).read().strip().split("\n")
-        for x in a:
-            if choice in ["-d", "-dl"]:
-                if not os.path.isdir(x):
-                    continue
-            elif choice in ["-n", "-c", "-nl", "-cl"]:
-                if not os.path.isfile(x):
-                    continue
-            elif choice in ["-a", "-al"]:
-                pass
-            found.append(x)
+        if platform != 'darwin':
+            for x in indexed:
+                if i.lower() in x.rstrip('/').split('/')[-1].lower():
+                    found.append(x)
+        else:
+            a = os.popen("mdfind%s %s" % (o, i)).read().strip().split("\n")
+            for x in a:
+                if choice in ["-d", "-dl"]:
+                    if not os.path.isdir(x):
+                        continue
+                if choice in ["-n", "-c", "-nl", "-cl"]:
+                    if not os.path.isfile(x):
+                        continue
+                found.append(x)
 
 def meta(F):
     size = os.path.getsize(F)
-    P = os.popen("ls -l " + F.replace(" ", "\ ")).read()[1:10]
-    perm = P[-3:]
+    P = oct(os.stat(F).st_mode & 0777)[-3:]
+    perm = int(P[2])
     if os.geteuid() == os.stat(F).st_uid:
-        perm = P[:3]
-    rwx = []
-    if "r" in perm:
-        rwx.append("read")
-    if "w" in perm:
-        rwx.append("write")
-    if "x" in perm:
-        rwx.append("execute")
+        perm = int(P[0])
+    rwx = ["read", "write", "execute"]
+    if perm != 7:
+        if perm == 6:
+            del rwx[2]
+        if perm == 5:
+            del rwx[1]
+        if perm == 4:
+            del rwx[1:]
+        if perm == 3:
+            del rwx[0]
+        if perm == 2:
+            rwx = [rwx[1]]
+        if perm == 1:
+            del rwx[0:2]
+        if not perm:
+            rwx = []
     perm = "none"
-    if len(rwx) > 0:
+    if len(rwx):
         perm = ", ".join(rwx)
     return size, perm
 
 def stdout(F):
-    with open(F) as f:
+    error = 0
+    try:
+        f = open(F)
         b = f.read().strip().split("\n")
         b = [x.strip() for x in b if len(x.strip()) > 0]
-        size, permissions = meta(F)
-        print """\n%sContents of %s%s\n%s\n%sSize:     %s bytes\nAccess:   %s%s
+        f.close()
+    except (IOError, OSError):
+        error = 1
+        b = "Could not read from '%s'" % F
+        if os.path.isdir(F):
+            b = "'%s' is a directory." % F
+    size, permissions = meta(F)
+    print """\n%sContents of %s%s\n%s\n%sSize:     %s bytes\nAccess:   %s%s
 %s""" % (G, F, Z, "=" * width, R, size, permissions, Z, "=" * width)
+    if not error:
         if size > 250:
             print "File too large, printing first 250 characters.\n" + "-" * 46
             print Y + "\n".join(b)[:250] + Z
         else:
             print Y + "\n".join(b) + Z
-        time.sleep(0.1)
-        f.close()
+    else:
+        print b
+    time.sleep(0.1) # Partially prevents excessive CPU usage.
 
 def main():
     choice = args()
     arg = argv[2:]
-    if choice in ["-n", "-d", "-nl", "-dl"]:
-        MDfind(choice, arg, " -name")
-    elif choice in ["-c", "-a", "-cl", "-al"]:
-        MDfind(choice, arg)
+    if platform == 'darwin':
+        if choice in ["-n", "-d", "-nl", "-dl"]:
+            o = ' -name'
+        elif choice in ["-c", "-a", "-cl", "-al"]:
+            o = ''
+    else:
+        if choice in ["-n", "-nl"]:
+            o = 'f'
+        elif choice in ['-d', '-dl']:
+            o = 'd'
+        else:
+            o = ''
+    MDfind(choice, arg, o)
     if not len(found):
-        print "No files found."
-        exit()
+        exit("No files found.")
     final = list(set(found))
     if not choice.endswith("l"):
         for i in final:
-            try:
-                stdout(i)
-            except IOError:
-                if not os.path.isdir(i):
-                    print "\nCould not read from '%s'\n" % i
+            stdout(i)
     print """
 Total files found: %d
 %s
@@ -162,4 +218,3 @@ if __name__ == "__main__":
         print help
     except KeyboardInterrupt:
         print
-    exit(1)
