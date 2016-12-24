@@ -13,11 +13,9 @@
 
 A python script that uses the help of `mdfind` to search and display any file's metadata and contents based on a given string.
 
-Compatibility: macOS, BSD (honestly no clue)
+Compatibility: macOS, Linux*
 
-```diff
-+ Note: A version compatible with GNU/Linux is currently being worked on (refer to status below).
-```
+\* *Refer to status below.*
 
 ### Setup
 
@@ -62,15 +60,15 @@ I somehow managed to create an indexing method for GNU/Linux systems without the
 * /home
 * /usr/bin
 * /usr/local/bin
+* /etc
 
 No significant timeouts so I think it's a good start. The algorithm has been verified to work in Debian and its derivatives, and likely other distibutions as well. Now it's all down to how much CPU potency and time you've got on your hands.
 
-Release date for version 1.5 is Dec 21 2016 so don't run away just yet! Hehe
-
-**EDIT:** ***rescheduled to Dec 23 2016***
+**NOTE:** ***I will summarise the differences between the two versions of foof by 2017, stay tuned and Merry Christmas everyone :)***
 
 ### Version history
 
+* 1.5 - Dec 24 2016 - GNU/Linux support, directory permissions issue fixed
 * 1.4 - Dec 19 2016 - more search options, more output options, bug fixes
 * 1.3 - Dec 18 2016 - truncate output of large files, fixed filename issue
 * 1.2 - Dec 17 2016 - file size and permissions
