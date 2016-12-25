@@ -15,7 +15,9 @@ A python script that uses the help of `mdfind` to search and display any file's 
 
 Compatibility: macOS, Linux
 
-\* *Comparison table below.*
+```diff
++ Comparison table below.
+```
 
 ### Setup
 
