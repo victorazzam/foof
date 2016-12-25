@@ -59,22 +59,13 @@ Note: append 'l' to the end of any option apart from -e
 |:----------------------:|-----------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
 |   Search terms filter  | start/end of the name, or after a special character (e.g. "flag" returns: \*flag & flag\* & \*–flag\*) | any part of the name                                                          |
 |     Content search     | Supported                                                                                     | Not supported                                                                 |
-|        Indexing        | Entire filesystem (pre-made, always up-to-date)                                               | /root, /home, /usr/bin, /usr/local/bin, /etc (live, at the start of each run) |
+|        Indexing        | Entire filesystem: mdfind (pre-made, always up-to-date)                                               | /root, /home, /usr/bin, /usr/local/bin, /etc: custom (live, at the start of each run) |
 |          Speed         | Fastest                                                                                       | Medium (depends on the CPU)                                                   |
 | Superuser requirements | None                                                                                          | Needs "root" to list protected files/dirs                                     |
 
 ### Latest update
 
-I somehow managed to create an indexing method for GNU/Linux systems without the need for another release. In the interest of time and computing resources, it currently only indexes:
-
-* $USER's home dir, if it's not [/root] or [in /home]
-* /root
-* /home
-* /usr/bin
-* /usr/local/bin
-* /etc
-
-The algorithm has been verified to work in Debian and its derivatives, and likely other distibutions as well. Now it's all down to how much CPU potency and time you've got on your hands.
+- [x] Comparison table added.
 
 ### Version history
 
