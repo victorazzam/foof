@@ -11,7 +11,7 @@
 
 ### Description
 
-A python script that uses the help of `mdfind` to search and display any file's metadata and contents based on a given string.
+A python script that uses the help of `mdfind` and a custom indexing system to search and display any file's metadata and contents based on a given string.
 
 Compatibility: macOS, Linux
 
