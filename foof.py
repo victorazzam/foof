@@ -133,39 +133,25 @@ def MDfind(choice, arg, o=""):
 
 def meta(F):
     size = os.path.getsize(F)
-    P = oct(os.stat(F).st_mode & 0777)[-3:]
-    perm = int(P[2])
-    if os.geteuid() == os.stat(F).st_uid:
-        perm = int(P[0])
-    rwx = ["read", "write", "execute"]
-    if perm != 7:
-        if perm == 6:
-            del rwx[2]
-        if perm == 5:
-            del rwx[1]
-        if perm == 4:
-            del rwx[1:]
-        if perm == 3:
-            del rwx[0]
-        if perm == 2:
-            rwx = [rwx[1]]
-        if perm == 1:
-            del rwx[0:2]
-        if not perm:
-            rwx = []
-    perm = "none"
-    if len(rwx):
-        perm = ", ".join(rwx)
+    P = oct(os.stat(F).st_mode & 0o777)[-3:]
+    own = os.geteuid() != os.stat(F).st_uid
+    perm = int(P[own * 2])
+    rwx = []
+    if perm > 3:
+        rwx += ["read"]
+    if perm in (2, 3, 6, 7):
+        rwx += ["write"]
+    if perm in (1, 3, 5, 7):
+        rwx += ["execute"]
+    perm = (", ".join(rwx), "none")[not rwx]
     return size, perm
 
 def stdout(F):
     error = 0
     try:
-        f = open(F)
-        b = f.read().strip().split("\n")
-        b = [x.strip() for x in b if len(x.strip()) > 0]
-        f.close()
-    except (IOError, OSError):
+        with open(F) as f:
+            b = [x.strip() for x in f if x.strip()]
+    except:
         error = 1
         b = "Could not read from '%s'" % F
         if os.path.isdir(F):
@@ -205,16 +191,12 @@ def main():
     if not choice.endswith("l"):
         for i in final:
             stdout(i)
-    print """
-Total files found: %d
-%s
-%s%s%s
-""" % (len(final), "-" * width, G, "\n".join(final), Z)
+    exit("\nTotal files found: %d\n%s\n%s%s%s\n" % (len(final), "-" * width, G, "\n".join(final), Z))
 
 if __name__ == "__main__":
     try:
         if len(argv) > 1:
-            exit(main())
-        print help
+            main()
+        print(help)
     except KeyboardInterrupt:
-        print
+        print()
