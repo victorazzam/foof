@@ -1,202 +1,100 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 #
-# Locate any file and display its metadata and contents.
-# Might need root in case of restrictions.
-# Apparently useful in CTFs ;)
+# Useful shell search command:
+# $ find /search/path -maxdepth 1 -not -type d -exec grep -li 'search_term_or_regex' {} \+
 #
-# Flags of our Fathers ya bish
+# Flags of our Fathers v2
 # Author: Victor Azzam
 # License: MIT
 
-import os
-import time
-from sys import argv, platform
+import os, sys, argparse
 
-Z = "\033[0m"
-R = "\033[91m"
-G = "\033[92m"
-Y = "\033[93m"
-C = "\033[96m"
-colors = (C,R,G,Y,R,Y,R,Y,R,Y,G,Y,R,Y,R,C,R,C,Z)
+v = "2.0"
+d = "1 August 2018"
+r = "https://victorazzam.github.io/foof"
 
-logo = """
-    %sFlags of our Fathers
- %s.________%so      o%s________.
-  %s\/\/\./\/\    %s/_-_-_-_-/
-   %s\________\  %s/________/
-             %s\%s/
-     %sv1.5%s    /%s\\
-            %s/  %s\\
+NAME = "FooF"
+USGE = "foof [options] <string> [string ...]"
+DESC = f"Locate files by name or contents ({r})"
+ELOG = "Content search dependency: ag (http://github.com/ggreer/the_silver_searcher)"
+HELP_type = "search by: n = name (default), c = contents, a = n + c"
+HELP_case = "ignore case when searching"
+HELP_path = "root search directory, default = $HOME"
+HELP_dpth = "search <num> directories deep, default = 0 (recursive)"
+HELP_axes = "filter by access rights, e.g. 5 matches r-x"
+parser = argparse.ArgumentParser(prog=NAME, usage=USGE, description=DESC, epilog=ELOG)
+parser.add_argument("string", nargs="+", help="the search keyword(s), space separated if >1")
+parser.add_argument("-b", "--by", choices=list("nca"), default="n", help=HELP_type, metavar="n|c|a")
+parser.add_argument("-i", "--case", action="store_true", help=HELP_case)
+parser.add_argument("-p", "--path", nargs=1, default="~", help=HELP_path, metavar="path")
+parser.add_argument("-d", "--depth", nargs=1, default=[0], type=int, help=HELP_dpth, metavar="num")
+parser.add_argument("-a", "--access", choices=range(8), nargs=1, default=None, type=int, help=HELP_axes, metavar="0-7")
+parser.add_argument("-v", "--version", action="store_true", help="show version and exit")
 
-    %sAuthor: Victor Azzam
-    %s--------------------
-        %sLicense: MIT%s
+def find(kw, by="n", case=0, path="~", depth=0, access=None):
+	"""
+	ARGS	kw		list		search keywords
+			by		str			search by
+			case	int/bool	ignore case
+			path	str			root search path
+			depth	int			recursion amount
+			access	int			permissions filter
+	
+	RETURN	exit_code, data
+	"""
 
-Locate any file and display its metadata and contents.
-""" % colors
+	import os
 
-help = logo + """
-USAGE
------
-%s <option> <string> [<string> ...]
+	# Path handling
+	if path[0] == "~":
+		path = os.path.expanduser("~") + path[1:]
+	path = os.path.abspath(path)
+	if not os.path.isdir(path):
+		return 1, "FooF: error: argument -p/--path: no such directory " + path
 
-OPTIONS
--------
--n    search file names
--c    search file names and contents
--d    search directory names
--a    combine options -n, -c and -d
--e    show examples for each option
+	# Permissions
+	if access is not None:
+		def permissions(f):
+			P = oct(os.stat(f).st_mode & 0o777)[-3:]
+			own = os.geteuid() != os.stat(f).st_uid
+			return int(P[own * 2])
 
-Note: append 'l' to the end of any option apart from -e
-      (-nl, -cl, etc...) to only display the locations
-      without the metadata and contents.
-""" % argv[0]
+	# Prepare content search
+	if by in "ca":
+		import shlex
+		case = "-i " * case
+		kw2 = shlex.quote("|".join(kw))
+		if not os.popen("which ag").read().strip():
+			return 1, "Dependency required: ag\nGet it from (http://github.com/ggreer/the_silver_searcher)"
 
-examples = logo + """
-EXAMPLES
---------
-%s -n foo bar xyz
-Find files containing 'foo' or 'bar' or 'xyz' in their name.
-
-%s -c flag
-Find files containing 'flag' in their name or contents.
-
-%s -d list
-Find directories containing 'list' in their name.
-
-%s -a daemon
-Find directories containing 'daemon' in their name, and files
-containing 'daemon' in their name or contents.
-""" % tuple([argv[0] for x in range(4)])
-
-found = []
-width = int(os.popen("stty size").read().split()[1])
-
-def args():
-    tmp = argv[1]
-    if tmp in ["-e", "-n", "-c", "-d", "-a", "-nl", "-cl", "-dl", "-al"]:
-        if argv[1] == "-e":
-            exit(examples)
-        else:
-            if platform != 'darwin' and tmp in ['-c', '-cl']:
-                exit("Unfortunately your system does not support searching by content, sorry about that :(")
-            return tmp
-    else:
-        exit(help)
-
-# Limited indexing system that replaces mdfind for those who don't have it.
-def index(paths_):
-    files = []
-    dirs = paths_
-    for path in dirs:
-        try:
-            for i in os.listdir(path):
-                i = path.rstrip('/') + '/' + i.strip('/')
-                if os.path.isfile(i):
-                    files.append(i)
-                elif os.path.isdir(i):
-                    dirs.append(i)
-        except (IOError, OSError):
-            pass
-    return sorted(files), sorted(dirs)
-
-def index_sort(index_src, o):
-    if index_src[0].startswith(('/home/', '/root/')):
-        del index_src[0]
-    index_n, index_d = index(index_src)
-    if o == 'f':
-        return index_n
-    if o == 'd':
-        return index_d
-    return index_n + index_d
-
-def MDfind(choice, arg, o=""):
-    if platform != 'darwin':
-        paths = [os.path.expanduser('~'), '/home', '/root', '/usr/bin', '/usr/local/bin', '/etc']
-        indexed = index_sort(paths, o)
-    for i in arg:
-        if platform != 'darwin':
-            for x in indexed:
-                if i.lower() in x.rstrip('/').split('/')[-1].lower():
-                    found.append(x)
-        else:
-            a = os.popen("mdfind%s %s" % (o, i)).read().strip().split("\n")
-            for x in a:
-                if choice in ["-d", "-dl"]:
-                    if not os.path.isdir(x):
-                        continue
-                if choice in ["-n", "-c", "-nl", "-cl"]:
-                    if not os.path.isfile(x):
-                        continue
-                found.append(x)
-
-def meta(F):
-    size = os.path.getsize(F)
-    P = oct(os.stat(F).st_mode & 0o777)[-3:]
-    own = os.geteuid() != os.stat(F).st_uid
-    perm = int(P[own * 2])
-    rwx = []
-    if perm > 3:
-        rwx += ["read"]
-    if perm in (2, 3, 6, 7):
-        rwx += ["write"]
-    if perm in (1, 3, 5, 7):
-        rwx += ["execute"]
-    perm = (", ".join(rwx), "none")[not rwx]
-    return size, perm
-
-def stdout(F):
-    error = 0
-    try:
-        with open(F) as f:
-            b = [x.strip() for x in f if x.strip()]
-    except:
-        error = 1
-        b = "Could not read from '%s'" % F
-        if os.path.isdir(F):
-            b = "'%s' is a directory." % F
-    size, permissions = meta(F)
-    print """\n%sContents of %s%s\n%s\n%sSize:     %s bytes\nAccess:   %s%s
-%s""" % (G, F, Z, "=" * width, R, size, permissions, Z, "=" * width)
-    if not error:
-        if size > 250:
-            print "File too large, printing first 250 characters.\n" + "-" * 46
-            print Y + "\n".join(b)[:250] + Z
-        else:
-            print Y + "\n".join(b) + Z
-    else:
-        print b
-    time.sleep(0.1) # Partially prevents excessive CPU usage.
-
-def main():
-    choice = args()
-    arg = argv[2:]
-    if platform == 'darwin':
-        if choice in ["-n", "-d", "-nl", "-dl"]:
-            o = ' -name'
-        elif choice in ["-c", "-a", "-cl", "-al"]:
-            o = ''
-    else:
-        if choice in ["-n", "-nl"]:
-            o = 'f'
-        elif choice in ['-d', '-dl']:
-            o = 'd'
-        else:
-            o = ''
-    MDfind(choice, arg, o)
-    if not len(found):
-        exit("No files found.")
-    final = list(set(found))
-    if not choice.endswith("l"):
-        for i in final:
-            stdout(i)
-    exit("\nTotal files found: %d\n%s\n%s%s%s\n" % (len(final), "-" * width, G, "\n".join(final), Z))
+	matches = set()
+	a = os.walk(path)
+	for src, dirs, files in a:
+		if depth and src.count("/") - path.count("/") >= depth:
+			continue
+		if by in "na":
+			DF = dirs + files
+			KW = kw
+			if case:
+				DF = map(str.lower, dirs + files)
+				KW = map(str.lower, kw)
+			matches.update(map(lambda x: src + os.path.sep + x, filter(lambda x: any(k in x for k in KW), DF)))
+		if by in "ca":
+			cmd = f"ag --depth 1 -l -Q --nocolor {case}{KW2} {shlex.quote(src)}"
+			matches.update(x for x in os.popen(cmd).read().strip().split() if x)
+	if access is not None:
+		matches = filter(lambda f: permissions(f) == (access[0] if type(access) == list else access), matches)
+	return 0, sorted(matches)
 
 if __name__ == "__main__":
-    try:
-        if len(argv) > 1:
-            main()
-        print(help)
-    except KeyboardInterrupt:
-        print()
+	try:
+		# Parse arguments
+		args = parser.parse_args()
+		if args.version:
+			sys.exit(f"Flags of our Fathers (FooF) v{v} ({d})")
+		# Search
+		F = find(args.string, args.by, args.case, args.path[0], args.depth[0], args.access)
+		if F[1]:
+			print("\n".join(F[1]) if type(F[1]) == list else F[1])
+	except KeyboardInterrupt:
+		print()
