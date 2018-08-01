@@ -7,11 +7,12 @@
 # Author: Victor Azzam
 # License: MIT
 
-import os, sys, argparse
+import argparse
 
 v = "2.0"
 d = "1 August 2018"
 r = "https://victorazzam.github.io/foof"
+
 NAME = "FooF"
 USGE = "foof [options] <string> [string ...]"
 DESC = f"Locate files by name or contents ({r})"
@@ -42,6 +43,9 @@ def find(kw, by="n", case=0, path="~", depth=0, access=None):
 	RETURN  exit_code, data
 	"""
 
+	# Prevents a bajillion false positives
+	assert type(kw) in (list, tuple, set) and all(type(x) == str for x in kw), "FooF: error: kw must be a string"
+
 	import os
 
 	# Path handling
@@ -60,9 +64,8 @@ def find(kw, by="n", case=0, path="~", depth=0, access=None):
 
 	# Prepare content search
 	if by in "ca":
-		import shlex
-		case = "-i " * case
-		kw2 = shlex.quote("|".join(kw))
+		import re, shlex
+		kw2 = "|".join(map(lambda k: re.escape(k).replace("'", r"\'"), kw))
 		if not os.popen("which ag").read().strip():
 			return 1, "Dependency required: ag\nGet it from (http://github.com/ggreer/the_silver_searcher)"
 
@@ -74,25 +77,22 @@ def find(kw, by="n", case=0, path="~", depth=0, access=None):
 		if by in "na":
 			for name in dirs + files:
 				for keyw in kw:
-					N = name.lower() if case else name
-					K = keyw.lower() if case else keyw
+					N, K = (name.lower(), keyw.lower()) if case else (name, keyw)
 					if K in N:
 						matches.add(src + os.path.sep + name)
 						break
 		if by in "ca":
-			cmd = f"ag --depth 1 -l -Q --nocolor {case}{KW2} {shlex.quote(src)}"
-			matches.update(x for x in os.popen(cmd).read().strip().split() if x)
+			cmd = f"ag --depth 1 -l -m 1 {('-s', '-i')[case]} '{kw2}' {shlex.quote(src)} 2>/dev/null"
+			matches.update(x for x in os.popen(cmd).read().split("\n") if x)
 	if access is not None:
 		matches = filter(lambda f: permissions(f) == (access[0] if type(access) == list else access), matches)
 	return 0, sorted(matches)
 
 if __name__ == "__main__":
 	try:
-		# Parse arguments
 		args = parser.parse_args()
 		if args.version:
-			sys.exit(f"Flags of our Fathers (FooF) v{v} ({d})")
-		# Search
+			exit(f"Flags of our Fathers (FooF) v{v} ({d})")
 		F = find(args.string, args.by, args.case, args.path[0], args.depth[0], args.access)
 		if F[1]:
 			print("\n".join(F[1]) if type(F[1]) == list else F[1])
