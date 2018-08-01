@@ -19,7 +19,7 @@ Note 2: not tested on Windows
 
 ### Setup
 
-Install dependency `ag` from `http://github.com/ggreer/the_silver_searcher`
+Install dependency `ag` from http://github.com/ggreer/the_silver_searcher
 
 Install `foof`:
 
