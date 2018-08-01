@@ -12,7 +12,6 @@ import os, sys, argparse
 v = "2.0"
 d = "1 August 2018"
 r = "https://victorazzam.github.io/foof"
-
 NAME = "FooF"
 USGE = "foof [options] <string> [string ...]"
 DESC = f"Locate files by name or contents ({r})"
@@ -33,12 +32,12 @@ parser.add_argument("-v", "--version", action="store_true", help="show version a
 
 def find(kw, by="n", case=0, path="~", depth=0, access=None):
 	"""
-	ARGS    kw      list       search keywords
-		by      str        search by
-		case    int/bool   ignore case
-		path    str        root search path
-		depth   int        recursion amount
-		access  int        permissions filter
+	ARGS    kw      list      search keywords
+	        by      str       search by
+	        case    int/bool  ignore case
+	        path    str       root search path
+	        depth   int       recursion amount
+	        access  int       permissions filter
 
 	RETURN  exit_code, data
 	"""
@@ -73,12 +72,13 @@ def find(kw, by="n", case=0, path="~", depth=0, access=None):
 		if depth and src.count("/") - path.count("/") >= depth:
 			continue
 		if by in "na":
-			DF = dirs + files
-			KW = kw
-			if case:
-				DF = map(str.lower, dirs + files)
-				KW = map(str.lower, kw)
-			matches.update(map(lambda x: src + os.path.sep + x, filter(lambda x: any(k in x for k in KW), DF)))
+			for name in dirs + files:
+				for keyw in kw:
+					N = name.lower() if case else name
+					K = keyw.lower() if case else keyw
+					if K in N:
+						matches.add(src + os.path.sep + name)
+						break
 		if by in "ca":
 			cmd = f"ag --depth 1 -l -Q --nocolor {case}{KW2} {shlex.quote(src)}"
 			matches.update(x for x in os.popen(cmd).read().strip().split() if x)
