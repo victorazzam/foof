@@ -19,20 +19,19 @@ Note 2: not tested on Windows
 
 ### Setup
 
-Install dependency `ag` from http://github.com/ggreer/the_silver_searcher
+Install `ag` from http://github.com/ggreer/the_silver_searcher
 
-Install `foof`:
+Then install `foof`:
 
 ```txt
 $ git clone https://github.com/victorazzam/foof.git
 $ cd foof-master
-$ mv foof.py foof
-$ chmod a+x foof
+$ chmod a+x foof.py
 ```
 
 Finally run foof like this:
 
-`$ ./foof --help`
+`$ ./foof.py --help`
 
 ### Usage
 
@@ -54,7 +53,7 @@ optional arguments:
 
 ### Latest changes
 
-* The contents search is now done by `ag`
+* Contents search is done by `ag`
 * Specify search path
 * Search by permissions
 * Customise search depth
