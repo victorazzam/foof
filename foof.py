@@ -33,14 +33,14 @@ parser.add_argument("-v", "--version", action="store_true", help="show version a
 
 def find(kw, by="n", case=0, path="~", depth=0, access=None):
 	"""
-	ARGS	kw		list		search keywords
-			by		str			search by
-			case	int/bool	ignore case
-			path	str			root search path
-			depth	int			recursion amount
-			access	int			permissions filter
-	
-	RETURN	exit_code, data
+	ARGS    kw      list       search keywords
+		by      str        search by
+		case    int/bool   ignore case
+		path    str        root search path
+		depth   int        recursion amount
+		access  int        permissions filter
+
+	RETURN  exit_code, data
 	"""
 
 	import os
