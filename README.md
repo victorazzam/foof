@@ -1,7 +1,7 @@
 # Flags of our Fathers
 
 ```
-                 .________o v1.5 o________.
+                 .________o v2.0 o________.
                   \/\/\./\/\    /_-_-_-_-/
                    \________\  /________/
                              \/
@@ -11,64 +11,60 @@
 
 ### Description
 
-A python script that uses the help of `mdfind` and a custom indexing system to search and display any file's metadata and contents based on a given string.
+Locate any file by name or contents with finely grained controls.
 
-Compatibility: macOS, Linux
+Note 1: regular expressions not supported (yet)
 
-```diff
-+ Comparison table below.
-```
+Note 2: not tested on Windows
 
 ### Setup
 
-Download and grant execution permissions:
+Install dependency `ag` from `http://github.com/ggreer/the_silver_searcher`
+
+Install `foof`:
 
 ```txt
 $ git clone https://github.com/victorazzam/foof.git
 $ cd foof-master
-$ chmod a+x foof.py
+$ mv foof.py foof
+$ chmod a+x foof
 ```
 
 Finally run foof like this:
 
-`$ ./foof.py`
+`$ ./foof --help`
 
-### Help
+### Usage
 
 ```
-USAGE
------
-./foof.py <option> <string> [<string> ...]
+usage: foof [options] <string> [string ...]
 
-OPTIONS
--------
--n    search file names
--c    search file names and contents
--d    search directory names
--a    combine options -n, -c and -d
--e    show examples for each option
+positional arguments:
+  string                the search keyword(s), space separated if >1
 
-Note: append 'l' to the end of any option apart from -e
-      (-nl, -cl, etc...) to only display the locations
-      without the metadata and contents.
+optional arguments:
+  -h, --help            show this help message and exit
+  -b n|c|a, --by n|c|a  search by: n = name (default), c = contents, a = n + c
+  -i, --case            ignore case when searching
+  -p path, --path path  root search directory, default = $HOME
+  -d num, --depth num   search <num> directories deep, default = 0 (recursive)
+  -a 0-7, --access 0-7  filter by access rights, e.g. 5 matches r-x
+  -v, --version         show version and exit
 ```
 
-### Comparison table
+### Latest changes
 
-|           OS           | macOS                                                                                         | GNU/Linux                                                                     |
-|:----------------------:|-----------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
-|   Search terms filter  | start/end of the name, or after a special character (e.g. "flag" returns: \*flag & flag\* & \*–flag\*) | any part of the name                                                          |
-|     Content search     | Supported                                                                                     | Not supported                                                                 |
-|        Indexing        | Entire filesystem: mdfind (pre-made, always up-to-date)                                               | /root, /home, /usr/bin, /usr/local/bin, /etc: custom (live, at the start of each run) |
-|          Speed         | Fastest                                                                                       | Medium (depends on the CPU)                                                   |
-| Superuser requirements | None                                                                                          | Needs "root" to list protected files/dirs                                     |
-
-### Latest update
-
-- [x] Comparison table added.
+* The contents search is now done by `ag`
+* Specify search path
+* Search by permissions
+* Customise search depth
+* Control case sensitivity
+* Can be used as a library: `from foof import find`
+* Linear pipeable output
 
 ### Version history
 
+* 2.0 - Aug 01 2018 - completely rewritten, see changelog
 * 1.5 - Dec 24 2016 - GNU/Linux support, directory permissions issue fixed
 * 1.4 - Dec 19 2016 - more search options, more output options, bug fixes
 * 1.3 - Dec 18 2016 - truncate output of large files, fixed filename issue
