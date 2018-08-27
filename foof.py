@@ -29,7 +29,6 @@ parser.add_argument("-i", "--case", action="store_true", help=HELP_case)
 parser.add_argument("-p", "--path", nargs=1, default="~", help=HELP_path, metavar="path")
 parser.add_argument("-d", "--depth", nargs=1, default=[0], type=int, help=HELP_dpth, metavar="num")
 parser.add_argument("-a", "--access", choices=range(8), nargs=1, default=None, type=int, help=HELP_axes, metavar="0-7")
-parser.add_argument("-v", "--version", action="store_true", help="show version and exit")
 
 def find(kw, by="n", case=0, path="~", depth=0, access=None):
 	"""
@@ -90,9 +89,10 @@ def find(kw, by="n", case=0, path="~", depth=0, access=None):
 
 if __name__ == "__main__":
 	try:
-		args = parser.parse_args()
-		if args.version:
+		import sys
+		if "-v" in sys.argv or "--version" in sys.argv:
 			exit(f"Flags of our Fathers (FooF) v{v} ({d})")
+		args = parser.parse_args()
 		F = find(args.string, args.by, args.case, args.path[0], args.depth[0], args.access)
 		if F[1]:
 			print("\n".join(F[1]) if type(F[1]) == list else F[1])
